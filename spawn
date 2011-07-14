@@ -1,0 +1,49 @@
+#!/bin/bash
+# Copyright (c) 2011 Martin Ueding <dev@martin-ueding.de>
+
+# spawns a template
+
+# Checks in a specified template folder for a given template name and copies it
+# to the current directory. If a filename is given as a second argument, it is
+# copied there instead. If no template could be found, `find` is used to find a
+# template starting with that name. The user is then asked whether he wanted
+# that file.
+
+if [[ -z "$1" ]]
+then
+	echo "usage: spawn <templatename>"
+	exit 1
+fi
+
+if [[ -z "$2" ]]
+then
+	target=.
+else
+	target="$2"
+fi
+
+templatepath=~/Vorlagen
+if [[ ! -d "$templatepath" ]]
+then
+	echo "$templatepath does not exist."
+	exit 2
+fi
+
+selected="$templatepath/${1}"
+
+if [[ ! -f "$selected" ]]
+then
+	likely=$(find "$templatepath" -type f -name "$1*" | head -n 1)
+	if [[ -z "$likely" ]]
+	then
+		echo "No template like that."
+		exit 3
+	fi
+	read -r -p "Did you mean $(basename $likely)? [Y/n] " answer
+	if [[ "$answer" = [yYjJ] || -z "$answer" ]]
+	then
+		cp "$likely" "$target"
+	fi
+else
+	cp "$selected" "$target"
+fi
