@@ -37,16 +37,18 @@ spawn-it() {
 
 if [[ ! -f "$selected" ]]
 then
-	likely=$(find "$templatepath" -type f -name "$1*" | head -n 1)
-	if [[ -z "$likely" ]]
+	candidates=$(find "$templatepath" -type f -name "$1*" | wc -l)
+	likely=$(find "$templatepath" -type f -name "$1*")
+	if ((candiates == 1))
+	then
+		spawn-it "$likely" "$2"
+	elif ((candidates == 0))
 	then
 		echo "No template like that."
 		exit 3
-	fi
-	read -r -p "Did you mean $(basename $likely)? [Y/n] " answer
-	if [[ "$answer" = [yYjJ] || -z "$answer" ]]
-	then
-		spawn-it "$likely" "$2"
+	else
+		echo "Ambigious template. Could be $(echo "$likely" | tr '\n' ' ')."
+		exit 4
 	fi
 else
 	spawn-it "$selected" "$2"
