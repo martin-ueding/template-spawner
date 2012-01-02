@@ -39,10 +39,10 @@ if [[ ! -f "$selected" ]]
 then
 	candidates=$(find "$templatepath" -type f -name "$1*" | wc -l)
 	likely=$(find "$templatepath" -type f -name "$1*")
-	if ((candiates == 1))
+	if ((candiates = 1))
 	then
 		spawn-it "$likely" "$2"
-	elif ((candidates == 0))
+	elif ((candidates = 0))
 	then
 		echo "No template like that."
 		exit 3
