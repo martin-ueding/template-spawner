@@ -25,6 +25,11 @@ fi
 selected="$templatepath/${1}"
 
 spawn-it() {
+	if [[ ! -f "$1" ]]
+	then
+		exit 1
+	fi
+
 	if [[ -z "$2" ]]
 	then
 		target=$(basename "$1")
