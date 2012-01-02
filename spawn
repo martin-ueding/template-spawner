@@ -15,13 +15,6 @@ then
 	exit 1
 fi
 
-if [[ -z "$2" ]]
-then
-	target=.
-else
-	target="$2"
-fi
-
 templatepath=~/Vorlagen
 if [[ ! -d "$templatepath" ]]
 then
@@ -30,6 +23,17 @@ then
 fi
 
 selected="$templatepath/${1}"
+
+spawn-it() {
+	if [[ -z "$2" ]]
+	then
+		target=$(basename "$1")
+	else
+		target="$2"
+	fi
+
+	cat "$1" | sed "s/YEAR/$(date +%Y)/" > "$target"
+}
 
 if [[ ! -f "$selected" ]]
 then
@@ -42,8 +46,8 @@ then
 	read -r -p "Did you mean $(basename $likely)? [Y/n] " answer
 	if [[ "$answer" = [yYjJ] || -z "$answer" ]]
 	then
-		cp "$likely" "$target"
+		spawn-it "$likely" "$2"
 	fi
 else
-	cp "$selected" "$target"
+	spawn-it "$selected" "$2"
 fi
