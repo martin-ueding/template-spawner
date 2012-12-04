@@ -43,14 +43,41 @@ spawn-it() {
 		exit 1
 	fi
 
+	source="$1"
+
 	if [[ -z "$2" ]]
 	then
-		target=$(basename "$1")
+		target=$(basename "$source")
 	else
 		target="$2"
 	fi
 
-	cat "$1" | sed "s/YEAR/$(date +%Y)/" > "$target"
+	if [[ -f "$target" ]]
+	then
+		if diff "$source" "$target" > /dev/null
+		then
+			echo "The file already exists but is the same."
+		else
+			echo "The file already exists and differs."
+			select selection in "exit" "replace" "diff"
+			do
+				echo "$selection -- $REPLY"
+				case "$selection" in
+					exit)
+						exit 0
+						;;
+					replace)
+						break
+						;;
+					diff)
+						diff -u "$source" "$target"
+						;;
+				esac
+			done
+		fi
+	fi
+
+	cat "$source" | sed "s/YEAR/$(date +%Y)/" > "$target"
 }
 
 if [[ ! -f "$selected" ]]
